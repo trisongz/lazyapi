@@ -14,6 +14,10 @@ root = Path(__file__).parent
 requirements = [
     'httpx',
     'lazycls',
+    'pytz',
+    'dateparser',
+    'fastapi',
+    'starlette'
 ]
 
 args = {

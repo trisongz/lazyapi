@@ -9,6 +9,20 @@ DefaultHeaders = {
     'Content-Type': 'application/json'
 }
 
+class TimezCfg:
+    desired_timezone = envToStr('TIMEZONE_DESIRED', default='America/Chicago')
+    timezone_format = envToStr('TIMEZONE_FORMAT', default='%Y-%m-%dT%H:%M:%SZ')
+
+class FastAPICfg:
+    app_title = envToStr('FASTAPI_TITLE', 'LazyAPI')
+    app_desc = envToStr('FASTAPI_DESC', 'Just a LazyAPI Backend')
+    app_version = envToStr('FASTAPI_VERSION', 'v0.0.1')
+    include_middleware = envToBool('FASTAPI_MIDDLEWARE', 'true')
+    allow_origins = envToList('FASTAPI_ALLOW_ORIGINS', default=["*"])
+    allow_methods = envToList('FASTAPI_ALLOW_METHODS', default=["*"])
+    allow_headers = envToList('FASTAPI_ALLOW_HEADERS', default=["*"])
+    allow_credentials = envToBool('FASTAPI_ALLOW_CREDENTIALS', 'true')
+
 
 class HttpCfg:
     timeout = envToFloat('HTTPX_TIMEOUT', 30.0)

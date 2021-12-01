@@ -15,14 +15,18 @@ class HttpClient:
     def createClient(cls, base_url: str = "", cfg: HttpClientCfg = None, **kwargs) -> xClient:
         """Creates a Sync httpx Client"""
         cfg = cfg or HttpClientCfg
-        if kwargs.get('headers'): cfg.headers = kwargs.pop('headers')
+        if 'headers' in kwargs:
+            h = kwargs.pop('headers')
+            if h: cfg.headers = h
         return xClient(base_url=base_url, timeout=cfg.timeout, limits=cfg.limits, headers=cfg.headers, **kwargs)
     
     @classmethod
     def createAsyncClient(cls, base_url: str = "", cfg: AsyncHttpClientCfg = None, **kwargs) -> xAsyncClient:
         """ Creates an async httpx Client"""
         cfg = cfg or AsyncHttpClientCfg
-        if kwargs.get('headers'): cfg.headers = kwargs.pop('headers')
+        if 'headers' in kwargs:
+            h = kwargs.pop('headers')
+            if h: cfg.headers = h
         return xAsyncClient(base_url=base_url, timeout=cfg.timeout, limits=cfg.limits, headers=cfg.headers, **kwargs)
 
     @classmethod
@@ -47,7 +51,14 @@ class HttpClient:
 
 class ApiClient:
     def __init__(self, base_url: str = None, headers: DictAny = {}, cfg: HttpClientCfg = None, async_cfg: AsyncHttpClientCfg = None, module_name: str = 'lazyapi', **kwargs):
-        self.base_url = None, self.headers = {}, self.cfg = None, self.async_cfg = None, self._module_name = None, self._kwargs = {}, self._web = None, self._async = None
+        self.base_url = None
+        self.headers = {}
+        self.cfg = None
+        self.async_cfg = None
+        self._module_name = None
+        self._kwargs = {}
+        self._web = None
+        self._async = None
         self.set_configs(base_url = base_url, headers = headers, cfg = cfg, async_cfg = async_cfg, module_name = module_name, **kwargs)
 
     def set_configs(self, base_url: str = None, headers: DictAny = {}, cfg: HttpClientCfg = None, async_cfg: AsyncHttpClientCfg = None, module_name: str = 'lazyapi', **kwargs):
@@ -60,7 +71,8 @@ class ApiClient:
 
     def reset_clients(self, base_url: str = None, headers: DictAny = {}, cfg: HttpClientCfg = None, async_cfg: AsyncHttpClientCfg = None, module_name: str = 'lazyapi', **kwargs):
         self.set_configs(base_url = base_url, headers = headers, cfg = cfg, async_cfg = async_cfg, module_name = module_name, **kwargs)
-        self._web = None, self._async = None
+        self._web = None
+        self._async = None
     
     @property
     def client(self):
@@ -193,11 +205,13 @@ class ApiClient:
 
 
         
-
+APIClient = ApiClient
 
 __all__ = [
     'HttpClient',
     'HttpResponse',
+    'ApiClient',
+    'APIClient',
     'Response',
     'xClient',
     'xAsyncClient'
