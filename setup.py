@@ -17,7 +17,8 @@ requirements = [
     'pytz',
     'dateparser',
     'fastapi',
-    'starlette'
+    'starlette',
+    'six'
 ]
 
 args = {

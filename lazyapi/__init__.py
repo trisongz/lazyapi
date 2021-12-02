@@ -4,6 +4,7 @@ from . import config
 from . import classes
 from . import client
 from . import fast
+from . import retry
 
 from .timez import (
     timer,
@@ -24,6 +25,7 @@ from .timez import (
 from .classes import HttpResponse, RequestType, HttpRequest
 from .client import HttpClient, HttpCfg, AsyncHttpCfg, ApiClient, APIClient
 from .fast import create_fastapi, create_validator, FastAPICfg
+from .retry import retryable
 
 
 __all__ = [
@@ -34,5 +36,6 @@ __all__ = [
     'HttpCfg',
     'AsyncHttpCfg',
     'ApiClient',
-    'APIClient'
+    'APIClient',
+    'retryable',
 ]
