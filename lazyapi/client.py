@@ -50,8 +50,8 @@ class HttpClient:
 
 
 class ApiClient:
-    def __init__(self, base_url: str = None, headers: DictAny = {}, cfg: HttpClientCfg = None, async_cfg: AsyncHttpClientCfg = None, module_name: str = 'lazyapi', **kwargs):
-        self.base_url = None
+    def __init__(self, base_url: str = "", headers: DictAny = {}, cfg: HttpClientCfg = None, async_cfg: AsyncHttpClientCfg = None, module_name: str = 'lazyapi', default_resp: bool = False, **kwargs):
+        self.base_url = ""
         self.headers = {}
         self.cfg = None
         self.async_cfg = None
@@ -59,18 +59,20 @@ class ApiClient:
         self._kwargs = {}
         self._web = None
         self._async = None
-        self.set_configs(base_url = base_url, headers = headers, cfg = cfg, async_cfg = async_cfg, module_name = module_name, **kwargs)
+        self._default_mode = False
+        self.set_configs(base_url = base_url, headers = headers, cfg = cfg, async_cfg = async_cfg, module_name = module_name, default_resp = default_resp, **kwargs)
 
-    def set_configs(self, base_url: str = None, headers: DictAny = {}, cfg: HttpClientCfg = None, async_cfg: AsyncHttpClientCfg = None, module_name: str = 'lazyapi', **kwargs):
+    def set_configs(self, base_url: str = "", headers: DictAny = {}, cfg: HttpClientCfg = None, async_cfg: AsyncHttpClientCfg = None, module_name: str = 'lazyapi', default_resp: bool = False,  **kwargs):
         self.base_url = base_url or self.base_url
         self.headers = headers or self.headers
         self.cfg = cfg or self.cfg
         self.async_cfg = async_cfg or self.async_cfg
         self._module_name = module_name or self._module_name
+        self._default_mode = default_resp or self._default_mode
         self._kwargs = kwargs or self._kwargs
 
-    def reset_clients(self, base_url: str = None, headers: DictAny = {}, cfg: HttpClientCfg = None, async_cfg: AsyncHttpClientCfg = None, module_name: str = 'lazyapi', **kwargs):
-        self.set_configs(base_url = base_url, headers = headers, cfg = cfg, async_cfg = async_cfg, module_name = module_name, **kwargs)
+    def reset_clients(self, base_url: str = "", headers: DictAny = {}, cfg: HttpClientCfg = None, async_cfg: AsyncHttpClientCfg = None, module_name: str = 'lazyapi', default_resp: bool = False,  **kwargs):
+        self.set_configs(base_url = base_url, headers = headers, cfg = cfg, async_cfg = async_cfg, module_name = module_name, default_resp = default_resp, **kwargs)
         self._web = None
         self._async = None
     
@@ -89,56 +91,68 @@ class ApiClient:
     #                             Base REST APIs                                #
     #############################################################################
     
-    def delete(self, path: str, **kwargs) -> HttpResponse:
+    def delete(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = self.client.delete(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'sync', method = 'delete')
 
-    def get(self, path: str, **kwargs) -> HttpResponse:
+    def get(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = self.client.get(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'sync', method = 'get')
 
-    def head(self, path: str, **kwargs) -> HttpResponse:
+    def head(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = self.client.head(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'sync', method = 'head')
 
-    def patch(self, path: str, **kwargs) -> HttpResponse:
+    def patch(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = self.client.patch(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'sync', method = 'patch')
 
-    def put(self, path: str, **kwargs) -> HttpResponse:
+    def put(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = self.client.put(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'sync', method = 'put')
     
-    def post(self, path: str, **kwargs) -> HttpResponse:
+    def post(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = self.client.post(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'sync', method = 'post')
 
     #############################################################################
     #                          Async REST Methods                               #
     #############################################################################
     
-    async def async_delete(self, path: str, **kwargs) -> HttpResponse:
+    async def async_delete(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = await self.aclient.delete(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'async', method = 'delete')
 
-    async def async_get(self, path: str, **kwargs) -> HttpResponse:
+    async def async_get(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = await self.aclient.get(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'async', method = 'get')
     
-    async def async_head(self, path: str, **kwargs) -> HttpResponse:
+    async def async_head(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = await self.aclient.head(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'async', method = 'head')
 
-    async def async_patch(self, path: str, **kwargs) -> HttpResponse:
+    async def async_patch(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = await self.aclient.patch(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'async', method = 'patch')
 
-    async def async_put(self, path: str, **kwargs) -> HttpResponse:
+    async def async_put(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = await self.aclient.put(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'async', method = 'put')
     
-    async def async_post(self, path: str, **kwargs) -> HttpResponse:
+    async def async_post(self, path: str, **kwargs) -> Union[Response, HttpResponse]:
         resp = await self.aclient.post(url=path, **kwargs)
+        if self._default_mode: return resp
         return HttpResponse(resp = resp, clientType = 'async', method = 'post')
 
 
