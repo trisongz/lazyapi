@@ -7,7 +7,7 @@ from lazycls.types import *
 from .config import FastAPICfg
 
 
-def create_fastapi(app_name: str = None, title: str = None, desc: str = None, version: str = None, include_middleware: bool = FastAPICfg.include_middleware, allow_credentials: bool = None, allow_origins: List[str] = None, allow_methods: List[str] = None, allow_headers: List[str] = None, **kwargs):
+def create_fastapi(app_name: str = None, title: str = None, desc: str = None, version: str = None, include_middleware: bool = FastAPICfg.include_middleware, allow_credentials: bool = None, allow_origins: List[str] = None, allow_methods: List[str] = None, allow_headers: List[str] = None, **kwargs) -> Type[FastAPI]:
     if not title: title = FastAPICfg.app_title + (': ' + app_name if app_name else '')
     if not desc: desc = FastAPICfg.app_desc + (' ' + app_name if app_name else '')
     if not version: version = FastAPICfg.app_version
@@ -34,21 +34,21 @@ class FastAPIValidator:
         self._alias = alias
         self.header = Header(..., alias=self._alias)
 
-def create_validator(key: str, alias: str = 'token'):
+def create_validator(key: str, alias: str = 'token') -> Type[Callable]:
     async def verify_token(token: str = Header(..., alias=alias)):
         if token == key: return True
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials", headers={"WWW-Authenticate": "Bearer"})
     return verify_token
 
 
-def create_multi_validator(keys: List[str], alias: str = 'token'):
+def create_multi_validator(keys: List[str], alias: str = 'token') -> Type[Callable]:
     async def verify_token(token: str = Header(..., alias=alias)):
         if token in keys: return True
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials", headers={"WWW-Authenticate": "Bearer"})
     return verify_token
 
 
-def create_func_multi_validator_body(func: Callable, keys: List[str], alias: str = 'user_id', data_key: str = None, **funcKwargs):
+def create_func_multi_validator_body(func: Callable, keys: List[str], alias: str = 'user_id', data_key: str = None, **funcKwargs) -> Type[Callable]:
     datakey = data_key or alias
     async def verify_data(data: Dict[str, Any] = Body(..., alias=alias)):
         if data.get(datakey) and func(data[datakey], **funcKwargs) in keys: return True
@@ -56,7 +56,7 @@ def create_func_multi_validator_body(func: Callable, keys: List[str], alias: str
     return verify_data
 
 
-def create_func_multi_validator_request(func: Callable, keys: List[str], alias: str = 'user_id', data_key: str = None, reqType: str = 'form', **funcKwargs):
+def create_func_multi_validator_request(func: Callable, keys: List[str], alias: str = 'user_id', data_key: str = None, reqType: str = 'form', **funcKwargs) -> Type[Callable]:
     datakey = data_key or alias
     async def verify_data(req: Request = Body(..., alias=alias)):
         reqMethod = getattr(req, reqType)
