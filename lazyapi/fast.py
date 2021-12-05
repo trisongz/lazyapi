@@ -7,9 +7,9 @@ from lazycls.types import *
 from .config import FastAPICfg
 
 
-def create_fastapi(app_name: str, title: str = None, desc: str = None, version: str = None, include_middleware: bool = FastAPICfg.include_middleware, allow_credentials: bool = None, allow_origins: List[str] = None, allow_methods: List[str] = None, allow_headers: List[str] = None, **kwargs):
-    if not title: title = FastAPICfg.app_title + ': ' + app_name
-    if not desc: desc = FastAPICfg.app_desc + ' ' + app_name
+def create_fastapi(app_name: str = None, title: str = None, desc: str = None, version: str = None, include_middleware: bool = FastAPICfg.include_middleware, allow_credentials: bool = None, allow_origins: List[str] = None, allow_methods: List[str] = None, allow_headers: List[str] = None, **kwargs):
+    if not title: title = FastAPICfg.app_title + (': ' + app_name if app_name else '')
+    if not desc: desc = FastAPICfg.app_desc + (' ' + app_name if app_name else '')
     if not version: version = FastAPICfg.app_version
     new_fastapi_app = FastAPI(title=title, description=desc, version=version, **kwargs)
     if include_middleware:
