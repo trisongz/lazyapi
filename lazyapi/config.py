@@ -1,8 +1,9 @@
 import httpx
-import logging
+from logz import get_cls_logger
 from lazycls.envs import *
 
-logger = logging.getLogger(name='lazyapi')
+get_logger = get_cls_logger('lazyapi')
+logger = get_logger()
 
 DefaultHeaders = {
     'Accept': 'application/json',
