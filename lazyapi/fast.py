@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, Header, Depends, Body, HTTPException, status, BackgroundTasks
+from fastapi import FastAPI, Header, Depends, Body, Form, HTTPException, status, BackgroundTasks
 from fastapi.responses import JSONResponse, PlainTextResponse
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
@@ -34,6 +34,17 @@ class FastAPIValidator:
         self._alias = alias
         self.header = Header(..., alias=self._alias)
 
+"""
+The following can be called using
+
+validator = create_validator(key=secretapikey, alias='apikey') # or leave alias to use token
+
+@app.post('/download', summary='returns the file to download')
+async def download_file(req: DownloadRequest, background_tasks: BackgroundTasks, _ = Depends(validator)) -> FileResponse:
+    ...
+
+"""
+
 def create_validator(key: str, alias: str = 'token') -> Type[Callable]:
     async def verify_token(token: str = Header(..., alias=alias)):
         if token == key: return True
@@ -47,6 +58,18 @@ def create_multi_validator(keys: List[str], alias: str = 'token') -> Type[Callab
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials", headers={"WWW-Authenticate": "Bearer"})
     return verify_token
 
+def create_form_validator(key: str, alias: str = 'token') -> Type[Callable]:
+    async def verify_token(token: str = Form(..., alias=alias)):
+        if token == key: return True
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials", headers={"WWW-Authenticate": "Bearer"})
+    return verify_token
+
+
+def create_multi_form_validator(keys: List[str], alias: str = 'token') -> Type[Callable]:
+    async def verify_token(token: str = Form(..., alias=alias)):
+        if token in keys: return True
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials", headers={"WWW-Authenticate": "Bearer"})
+    return verify_token
 
 def create_func_multi_validator_body(func: Callable, keys: List[str], alias: str = 'user_id', data_key: str = None, **funcKwargs) -> Type[Callable]:
     datakey = data_key or alias
@@ -72,13 +95,17 @@ __all__ = [
     'Request',
     'PlainTextResponse',
     'JSONResponse',
-    'Header', 
+    'Header',
+    'Body',
+    'Form',
     'Depends', 
     'HTTPException', 
     'status', 
     'BackgroundTasks',
     'create_validator',
     'create_multi_validator',
+    'create_form_validator',
+    'create_multi_form_validator',
     'create_func_multi_validator_body',
     'create_func_multi_validator_request',
 ]
